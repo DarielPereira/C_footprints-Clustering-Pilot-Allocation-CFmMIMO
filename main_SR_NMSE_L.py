@@ -13,10 +13,9 @@ from functionsUtils import save_results, load_results
 
 ##Setting Parameters
 configuration = {
-    'nbrOfSetups': 10,             # number of Monte-Carlo setups
+    'nbrOfSetups': 30,             # number of Monte-Carlo setups
     'nbrOfRealizations': 3,       # number of channel realizations per setup
-    'L': 400,                       # number of APs
-    'N': 1,                     # number of antennas per AP
+    'K': 100,                     # number of UEs
     'tau_c': 200,                 # length of the coherence block
     'tau_p': 10,                  # length of the pilot sequences
     'T': 1,                       # pilot reuse factor
@@ -36,8 +35,7 @@ algorithms = {
 
 nbrOfSetups = configuration['nbrOfSetups']
 nbrOfRealizations = configuration['nbrOfRealizations']
-L = configuration['L']
-N = configuration['N']
+K = configuration['K']
 tau_c = configuration['tau_c']
 tau_p = configuration['tau_p']
 T = configuration['T']
@@ -45,27 +43,30 @@ p = configuration['p']
 ASD_varphi = configuration['ASD_varphi']
 ASD_theta = configuration['ASD_theta']
 
-setups = [50, 100, 150, 200, 250, 300, 350, 400]
+setups = [(4, 100), (9, 36), (16, 25), (36, 16), (64, 9), (100, 4), (400, 1)]
 
 results = {
-    'Kmeans_locations': np.zeros((len(setups))),
-    'Kfootprints': np.zeros((len(setups))),
-    'DCC': np.zeros((len(setups))),
-    'DCPA': np.zeros((len(setups))),
-    'balanced_random': np.zeros((len(setups))),
-    'random': np.zeros((len(setups))),
+    'Kmeans_locations': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
+    'Kfootprints': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
+    'DCC': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
+    'DCPA': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
+    'balanced_random': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
+    'random': {'NMSEs': np.zeros((len(setups))), 'sum_rates': np.zeros((len(setups)))},
 }
 
 for idx, setup in enumerate(setups):
-    K = setup
+    L = setup[0]
+    N = setup[1]
 
     for algorithm in algorithms:
         cl_mode = algorithms[algorithm][0]
         pa_mode = algorithms[algorithm][1]
 
+        sum_rates = 0
         NMSEs = 0
 
-        print(f'number of UEs K: {K}')
+        print(f'number of APs L: {L}')
+        print(f'number of antennas N: {N}')
         print('Clustering mode: ' + cl_mode)
         print('Pilot allocation mode: ' + pa_mode)
 
@@ -89,10 +90,22 @@ for idx, setup in enumerate(setups):
             NMSEs += system_NMSE/nbrOfSetups
             print('System NMSE: {}'.format(system_NMSE))
 
-        if cl_mode in results:
-            results[cl_mode][idx] = NMSEs
-        elif pa_mode in results:
-            results[pa_mode][idx] = NMSEs
+            # Generate channel realizations with estimates and estimation error matrices
+            Hhat, H, B, C = channelEstimates(R, nbrOfRealizations, L, K, N, tau_p, pilotIndex, p)
 
-file_name = f'./GRAPHs/VARIABLES_SAVED/NMSE_L_{L}_N_{N}_NbrSetps_{nbrOfSetups}_50_400.pkl'
+            # Compute SE for centralized and distributed uplink operations for the case when all APs serve all the UEs
+            SE_MMSE = functionComputeSE_uplink(Hhat, H, D, C, tau_c, tau_p, T,
+                                               nbrOfRealizations, N, K, L, p, R, pilotIndex)
+
+            print('Sum-rate: {}'.format(sum(SE_MMSE)[0]))
+            sum_rates += sum(SE_MMSE)[0]/nbrOfSetups
+
+        if cl_mode in results:
+            results[cl_mode]['NMSEs'][idx] = NMSEs
+            results[cl_mode]['sum_rates'][idx] = sum_rates
+        elif pa_mode in results:
+            results[pa_mode]['NMSEs'][idx] = NMSEs
+            results[pa_mode]['sum_rates'][idx] = sum_rates
+
+file_name = f'./GRAPHs/VARIABLES_SAVED/SR_NMSE_L_K_{K}_NbrSetps_{nbrOfSetups}_1_400.pkl'
 save_results(results, file_name)

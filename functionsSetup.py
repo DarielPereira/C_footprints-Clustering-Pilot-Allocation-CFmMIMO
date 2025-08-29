@@ -1,3 +1,8 @@
+"""
+This script contains the function that generates the simulation setup, including the locations of the APs and UEs,
+as well as the large-scale fading and spatial correlation matrices.
+"""
+
 import numpy as np
 import numpy.linalg as alg
 

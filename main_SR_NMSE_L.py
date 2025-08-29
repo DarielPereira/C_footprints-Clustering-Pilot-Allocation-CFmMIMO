@@ -1,3 +1,10 @@
+"""
+This script simulates a cell-free massive MIMO system to evaluate the uplink channel estimation performance in terms
+of normalized mean-squared error (NMSE) for different clustering and pilot allocation algorithms. The results are saved
+to generate NMSE vs number of APs (L) plots later.
+"""
+
+
 import numpy as np
 
 from functionsSetup import *

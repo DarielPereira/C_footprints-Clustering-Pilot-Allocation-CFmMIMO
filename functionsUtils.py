@@ -1,3 +1,7 @@
+"""
+This module contains utility functions for various mathematical and plotting operations.
+"""
+
 import numpy as np
 import numpy.linalg as alg
 import math

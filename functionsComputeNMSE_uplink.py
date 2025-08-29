@@ -1,3 +1,7 @@
+"""
+This function computes the NMSE for every user in a cell-free massive MIMO system.
+"""
+
 import numpy as np
 import numpy.linalg as alg
 import sympy as sp

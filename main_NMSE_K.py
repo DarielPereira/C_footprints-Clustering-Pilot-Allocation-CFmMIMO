@@ -1,3 +1,8 @@
+"""
+This script computes the uplink NMSE performance of different clustering and pilot assignment algorithms. Data is
+stored to generate NMSE vs number of UEs (K) plots later.
+"""
+
 import numpy as np
 
 from functionsSetup import *

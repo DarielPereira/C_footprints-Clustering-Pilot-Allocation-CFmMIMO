@@ -1,3 +1,8 @@
+"""
+This script simulates a cell-free massive MIMO system to evaluate the performance of different clustering and pilot
+allocation algorithms. Data is stored to generate normalized mean-squared error (NMSE) CDF plots later.
+"""
+
 from functionsSetup import *
 from functionsComputeNMSE_uplink import functionComputeNMSE_uplink
 import math

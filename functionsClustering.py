@@ -1,3 +1,9 @@
+"""
+This function implements different clustering algorithms for the UEs in a cell-free MIMO system. It contains the
+K-footprints (C-footprints) algorithm and the K-means algorithm based on UE locations.
+
+"""
+
 import numpy as np
 import numpy.linalg as linalg
 

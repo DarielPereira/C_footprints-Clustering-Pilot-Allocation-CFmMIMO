@@ -1,3 +1,6 @@
+"""Functions for pilot allocation"""
+
+
 import numpy as np
 import numpy.linalg as linalg
 import sympy as sp

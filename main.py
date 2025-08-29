@@ -1,3 +1,8 @@
+"""
+This script simulates a cell-free massive MIMO system with various configurations. Diverse strategies for clustering
+and pilot assignment are implemented, and the system's performance is evaluated in terms of NMSE and SE.
+"""
+
 import numpy as np
 
 from functionsSetup import *
